@@ -1,3 +1,21 @@
 spring:
   application:
     name: wishoria-messaging-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5671
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: komdjyax
+    ssl:
+      enabled: true
+server:
+  port: ${PORT:8081}
+
+app:
+  email:
+    from: "s1t1a1w1r1@gmail.com"
+  brevo:
+    api-key: ${BREVO_API_KEY}
+    api-url: "https://api.brevo.com/v3/smtp/email"
+

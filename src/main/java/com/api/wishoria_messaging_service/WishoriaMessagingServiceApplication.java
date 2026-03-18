@@ -1,4 +1,4 @@
-package com.api.wishoria_messaging_service.wishoria_messaging_service;
+package com.api.wishoria_messaging_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
