@@ -4,6 +4,10 @@ import com.api.wishoria_messaging_service.dto.EmailPayloadDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -16,7 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.api.wishoria_messaging_service.util.Constants.EMAIL_EXCHANGE;
 import static com.api.wishoria_messaging_service.util.Constants.EMAIL_QUEUE;
+import static com.api.wishoria_messaging_service.util.Constants.EMAIL_ROUTING_KEY;
 
 @Slf4j
 @Component
@@ -34,7 +40,11 @@ public class EmailQueueListener {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @RabbitListener(queues = EMAIL_QUEUE)
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = EMAIL_QUEUE, durable = "true"),
+            exchange = @Exchange(value = EMAIL_EXCHANGE, type = ExchangeTypes.DIRECT),
+            key = EMAIL_ROUTING_KEY
+    ))
     public void processEmail(@Valid EmailPayloadDto payload) {
         HttpEntity<Map<String, Object>> request = prepareMailRequest(payload);
 
