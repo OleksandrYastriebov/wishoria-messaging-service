@@ -6,16 +6,21 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
+import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static com.api.wishoria_messaging_service.util.Constants.EMAIL_EXCHANGE;
 import static com.api.wishoria_messaging_service.util.Constants.EMAIL_QUEUE;
 import static com.api.wishoria_messaging_service.util.Constants.EMAIL_ROUTING_KEY;
 
-@Component
+@Configuration
 public class RabbitMQConfig {
 
     @RabbitListener(bindings = @QueueBinding(
@@ -30,4 +35,5 @@ public class RabbitMQConfig {
     public MessageConverter jsonMessageConverter() {
         return new JacksonJsonMessageConverter();
     }
+
 }

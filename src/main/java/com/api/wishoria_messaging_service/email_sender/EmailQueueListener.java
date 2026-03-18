@@ -1,6 +1,7 @@
 package com.api.wishoria_messaging_service.email_sender;
 
 import com.api.wishoria_messaging_service.dto.EmailPayloadDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -34,7 +35,18 @@ public class EmailQueueListener {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @RabbitListener(queues = EMAIL_QUEUE)
-    public void processEmail(EmailPayloadDto payload) {
+    public void processEmail(@Valid EmailPayloadDto payload) {
+        HttpEntity<Map<String, Object>> request = prepareMailRequest(payload);
+
+        try {
+            restTemplate.postForEntity(brevoApiUrl, request, String.class);
+            log.info("Successfully sent email via Brevo to {}", payload.to());
+        } catch (Exception ex) {
+            log.error("Brevo API failed for email {}", payload.to(), ex);
+        }
+    }
+
+    private HttpEntity<Map<String, Object>> prepareMailRequest(EmailPayloadDto payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("api-key", brevoApiKey);
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -45,13 +57,6 @@ public class EmailQueueListener {
         body.put("subject", payload.subject());
         body.put("htmlContent", payload.htmlContent());
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-
-        try {
-            restTemplate.postForEntity(brevoApiUrl, request, String.class);
-            log.info("Successfully sent email via Brevo to {}", payload.to());
-        } catch (Exception ex) {
-            log.error("Brevo API failed for email {}", payload.to(), ex);
-        }
+        return new HttpEntity<>(body, headers);
     }
 }

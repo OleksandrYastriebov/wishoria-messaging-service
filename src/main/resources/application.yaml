@@ -9,6 +9,9 @@ spring:
     virtual-host: komdjyax
     ssl:
       enabled: true
+    listener:
+      simple:
+        default-requeue-rejected: false
 server:
   port: ${PORT:8081}
 
